@@ -1,0 +1,34 @@
+<%
+const actionIcons = {
+  created: '✨',
+  updated: '✏️',
+  completed: '✅',
+  deleted: '🗑️',
+  status_changed: '🔄',
+  archived: '🗃️',
+};
+const icon = actionIcons[item.action] || '📌';
+
+function timeAgo(dateStr) {
+  const now = new Date();
+  const then = new Date(dateStr);
+  const diffMs = now - then;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffMins < 1) return 'just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return then.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+%>
+<li class="activity-item">
+  <div class="activity-icon activity-icon--<%= item.action %>">
+    <%= icon %>
+  </div>
+  <div class="activity-text">
+    <div class="activity-message"><%= item.message %></div>
+    <div class="activity-time"><%= timeAgo(item.created_at) %></div>
+  </div>
+</li>

@@ -1,0 +1,26 @@
+<div class="stats-grid" id="stats-cards-inner">
+  <div class="stat-card stat-card--accent">
+    <span class="stat-card-icon">📌</span>
+    <div class="stat-card-value"><%= stats.total %></div>
+    <div class="stat-card-label">Total Tasks</div>
+    <div class="stat-card-sub"><%= stats.activeProjects %> active project<%= stats.activeProjects !== 1 ? 's' : '' %></div>
+  </div>
+  <div class="stat-card stat-card--inprogress">
+    <span class="stat-card-icon">🔄</span>
+    <div class="stat-card-value"><%= stats.inProgress %></div>
+    <div class="stat-card-label">In Progress</div>
+    <div class="stat-card-sub"><%= stats.review %> in review</div>
+  </div>
+  <div class="stat-card stat-card--done">
+    <span class="stat-card-icon">✅</span>
+    <div class="stat-card-value"><%= stats.done %></div>
+    <div class="stat-card-label">Completed</div>
+    <div class="stat-card-sub"><%= stats.todo %> still to do</div>
+  </div>
+  <div class="stat-card <%= stats.overdue > 0 ? 'stat-card--danger' : 'stat-card--warning' %>">
+    <span class="stat-card-icon"><%= stats.overdue > 0 ? '🔥' : '📅' %></span>
+    <div class="stat-card-value"><%= stats.overdue > 0 ? stats.overdue : stats.dueToday %></div>
+    <div class="stat-card-label"><%= stats.overdue > 0 ? 'Overdue' : 'Due Today' %></div>
+    <div class="stat-card-sub"><%= stats.dueToday %> due today</div>
+  </div>
+</div>

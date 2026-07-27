@@ -1,0 +1,15 @@
+<!-- Empty string: the task row element will be removed by HTMX -->
+
+<!-- OOB: Update stats cards -->
+<div id="stats-cards" hx-swap-oob="innerHTML">
+  <%- include('stats-cards', { stats }) %>
+</div>
+
+<!-- OOB: Update activity feed -->
+<div id="activity-feed-section" hx-swap-oob="innerHTML">
+  <div class="activity-header">
+    <span class="card-title">⚡ Recent Activity</span>
+    <a href="/activity" class="view-all-link">View all →</a>
+  </div>
+  <%- include('activity-feed', { activity }) %>
+</div>

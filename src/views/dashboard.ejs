@@ -1,0 +1,66 @@
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div>
+    <h1 class="topbar-title">Dashboard</h1>
+    <p class="topbar-subtitle">Overview of all your tasks and projects</p>
+  </div>
+  <div class="topbar-actions">
+    <span class="htmx-indicator" id="global-loader">
+      <span class="spinner"></span> Loading…
+    </span>
+    <button
+      class="btn btn-primary"
+      hx-get="/tasks/new"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+      hx-indicator="#global-loader"
+    >
+      ＋ New Task
+    </button>
+  </div>
+</header>
+
+<!-- ── Page Body ── -->
+<main class="page-content">
+
+  <!-- Stats Cards -->
+  <div id="stats-cards">
+    <%- include('partials/stats-cards', { stats }) %>
+  </div>
+
+  <!-- Dashboard Grid -->
+  <div class="dashboard-grid">
+
+    <!-- ── Left: Filters + Task List ── -->
+    <div>
+      <!-- Filter Bar -->
+      <form
+        hx-get="/tasks"
+        hx-target="#task-list-container"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+        hx-indicator="#global-loader"
+        id="filter-form"
+      >
+        <%- include('partials/filter-bar', { filters, projects }) %>
+      </form>
+
+      <!-- Task List -->
+      <div id="task-list-container" class="task-list-wrapper">
+        <%- include('partials/task-list', { tasks, filters, projects }) %>
+      </div>
+    </div>
+
+    <!-- ── Right: Activity Feed ── -->
+    <aside>
+      <div id="activity-feed-section" class="activity-section">
+        <div class="activity-header">
+          <span class="card-title">⚡ Recent Activity</span>
+          <a href="/activity" class="view-all-link">View all →</a>
+        </div>
+        <%- include('partials/activity-feed', { activity }) %>
+      </div>
+    </aside>
+
+  </div>
+</main>

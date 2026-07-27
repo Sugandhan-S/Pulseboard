@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title ? title + ' — PulseBoard' : 'PulseBoard' %></title>
+  <meta name="description" content="PulseBoard — A lightweight team task and activity board. Manage projects, tasks, and track your team's progress." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/css/style.css" />
+  <script src="https://unpkg.com/htmx.org@1.9.12" defer></script>
+</head>
+<body hx-boost="false">
+  <div id="htmx-progress"></div>
+
+  <div class="app-layout">
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">⚡</div>
+        <span class="sidebar-logo-text">PulseBoard</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <p class="sidebar-section-label">Navigation</p>
+        <a href="/" class="sidebar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'active' : '' %>">
+          <span class="icon">🏠</span> Dashboard
+        </a>
+        <a href="/activity" class="sidebar-link <%= (typeof currentPage !== 'undefined' && currentPage === 'activity') ? 'active' : '' %>">
+          <span class="icon">📋</span> Activity Feed
+        </a>
+
+        <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+        <p class="sidebar-section-label" style="margin-top: var(--space-4);">Projects</p>
+        <% projects.forEach(p => { %>
+          <a href="/projects/<%= p.id %>" class="sidebar-link <%= (typeof currentProject !== 'undefined' && currentProject && currentProject.id === p.id) ? 'active' : '' %>">
+            <span class="icon">📁</span>
+            <span class="truncate"><%= p.name %></span>
+          </a>
+        <% }) %>
+        <% } %>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button
+          class="sidebar-new-project-btn"
+          hx-get="/projects/new"
+          hx-target="#modal-container"
+          hx-swap="innerHTML"
+        >
+          <span>＋</span> New Project
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <div class="main-content">
+      <%- body %>
+    </div>
+  </div>
+
+  <!-- ── Modal Container (HTMX target) ── -->
+  <div id="modal-container"></div>
+
+  <script>
+    // HTMX progress bar
+    document.addEventListener('htmx:beforeRequest', () => {
+      document.getElementById('htmx-progress').style.width = '30%';
+      document.getElementById('htmx-progress').style.display = 'block';
+    });
+    document.addEventListener('htmx:afterRequest', () => {
+      const bar = document.getElementById('htmx-progress');
+      bar.style.width = '100%';
+      setTimeout(() => {
+        bar.style.display = 'none';
+        bar.style.width = '0%';
+      }, 300);
+    });
+
+    // Close modal on backdrop click
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('form-overlay')) {
+        document.getElementById('modal-container').innerHTML = '';
+      }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('modal-container').innerHTML = '';
+      }
+    });
+
+    // Update status select data attribute for CSS styling
+    document.addEventListener('htmx:afterSwap', () => {
+      document.querySelectorAll('.task-status-select').forEach(sel => {
+        sel.dataset.status = sel.value;
+      });
+    });
+    document.addEventListener('change', (e) => {
+      if (e.target.classList.contains('task-status-select')) {
+        e.target.dataset.status = e.target.value;
+      }
+    });
+  </script>
+</body>
+</html>

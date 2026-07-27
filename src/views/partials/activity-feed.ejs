@@ -1,0 +1,11 @@
+<% if (activity && activity.length > 0) { %>
+  <ul class="activity-list">
+    <% activity.forEach(item => { %>
+      <%- include('activity-item', { item }) %>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <div class="activity-empty">
+    No activity yet. Start creating tasks!
+  </div>
+<% } %>

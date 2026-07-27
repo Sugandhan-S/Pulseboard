@@ -1,0 +1,53 @@
+<div class="filter-bar">
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      name="search"
+      id="search-input"
+      class="search-input"
+      placeholder="Search tasks…"
+      value="<%= filters.search || '' %>"
+      hx-get="/tasks"
+      hx-target="#task-list-container"
+      hx-swap="innerHTML"
+      hx-trigger="keyup changed delay:300ms"
+      hx-push-url="true"
+      hx-include="#filter-form"
+      hx-indicator="#global-loader"
+      autocomplete="off"
+    />
+  </div>
+
+  <select name="project_id" class="filter-select" hx-get="/tasks" hx-target="#task-list-container" hx-swap="innerHTML" hx-include="#filter-form" hx-push-url="true" hx-trigger="change">
+    <option value="">All Projects</option>
+    <% projects.forEach(p => { %>
+      <option value="<%= p.id %>" <%= (filters.project_id && filters.project_id == p.id) ? 'selected' : '' %>><%= p.name %></option>
+    <% }) %>
+  </select>
+
+  <select name="status" class="filter-select" hx-get="/tasks" hx-target="#task-list-container" hx-swap="innerHTML" hx-include="#filter-form" hx-push-url="true" hx-trigger="change">
+    <option value="">All Statuses</option>
+    <option value="todo" <%= filters.status === 'todo' ? 'selected' : '' %>>To Do</option>
+    <option value="in_progress" <%= filters.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+    <option value="review" <%= filters.status === 'review' ? 'selected' : '' %>>Review</option>
+    <option value="done" <%= filters.status === 'done' ? 'selected' : '' %>>Done</option>
+  </select>
+
+  <select name="priority" class="filter-select" hx-get="/tasks" hx-target="#task-list-container" hx-swap="innerHTML" hx-include="#filter-form" hx-push-url="true" hx-trigger="change">
+    <option value="">All Priorities</option>
+    <option value="high" <%= filters.priority === 'high' ? 'selected' : '' %>>🔴 High</option>
+    <option value="medium" <%= filters.priority === 'medium' ? 'selected' : '' %>>🟡 Medium</option>
+    <option value="low" <%= filters.priority === 'low' ? 'selected' : '' %>>🟢 Low</option>
+  </select>
+
+  <input type="date" name="due_from" class="filter-select" style="padding-right: var(--space-3);" placeholder="From" value="<%= filters.due_from || '' %>"
+    hx-get="/tasks" hx-target="#task-list-container" hx-include="#filter-form" hx-push-url="true" hx-trigger="change" />
+
+  <input type="date" name="due_to" class="filter-select" style="padding-right: var(--space-3);" placeholder="To" value="<%= filters.due_to || '' %>"
+    hx-get="/tasks" hx-target="#task-list-container" hx-include="#filter-form" hx-push-url="true" hx-trigger="change" />
+
+  <% if (filters.search || filters.project_id || filters.status || filters.priority || filters.due_from || filters.due_to) { %>
+  <a href="/" class="btn btn-ghost btn-sm" title="Clear filters">✕ Clear</a>
+  <% } %>
+</div>

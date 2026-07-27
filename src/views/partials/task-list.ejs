@@ -1,0 +1,31 @@
+<div id="task-list-wrapper">
+  <div class="task-list-header">
+    <span class="task-list-title">
+      Tasks
+      <span class="task-count-badge"><%= tasks.length %></span>
+    </span>
+    <div class="flex items-center gap-2">
+      <span class="htmx-indicator" id="list-loader">
+        <span class="spinner"></span>
+      </span>
+    </div>
+  </div>
+
+  <% if (tasks.length === 0) { %>
+    <%- include('empty-state', {
+      icon: '📭',
+      title: 'No tasks found',
+      description: filters && (filters.search || filters.status || filters.priority || filters.project_id)
+        ? 'Try adjusting your filters to find what you\'re looking for.'
+        : 'Create your first task to get started!',
+      actionLabel: '＋ New Task',
+      actionAttrs: 'hx-get="/tasks/new" hx-target="#modal-container" hx-swap="innerHTML"'
+    }) %>
+  <% } else { %>
+    <ul id="task-list">
+      <% tasks.forEach(task => { %>
+        <%- include('task-row', { task }) %>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>

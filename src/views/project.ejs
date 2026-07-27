@@ -1,0 +1,72 @@
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div>
+    <h1 class="topbar-title"><%= project.name %></h1>
+    <p class="topbar-subtitle">Project details and tasks</p>
+  </div>
+  <div class="topbar-actions">
+    <button
+      class="btn btn-secondary btn-sm"
+      hx-get="/projects/<%= project.id %>/edit"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+    >✏️ Edit Project</button>
+    <button
+      class="btn btn-danger btn-sm"
+      hx-delete="/projects/<%= project.id %>"
+      hx-confirm="Archive this project? Tasks will remain."
+      hx-target="body"
+    >🗃️ Archive</button>
+    <button
+      class="btn btn-primary btn-sm"
+      hx-get="/tasks/new"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+    >＋ New Task</button>
+  </div>
+</header>
+
+<main class="page-content">
+
+  <!-- Project Header Card -->
+  <div class="project-header">
+    <div class="project-header-top">
+      <div>
+        <% if (project.description) { %>
+          <p class="project-description"><%= project.description %></p>
+        <% } %>
+        <span class="badge <%= project.status === 'active' ? 'badge-done' : 'badge-todo' %>">
+          <%= project.status %>
+        </span>
+      </div>
+    </div>
+    <div class="project-stats-row">
+      <div class="project-stat">
+        <span class="project-stat-value"><%= stats.total %></span>
+        <span class="project-stat-label">Total Tasks</span>
+      </div>
+      <div class="project-stat">
+        <span class="project-stat-value" style="color: var(--status-done)"><%= stats.done %></span>
+        <span class="project-stat-label">Completed</span>
+      </div>
+      <div class="project-stat">
+        <span class="project-stat-value" style="color: var(--status-inprogress)"><%= stats.inProgress %></span>
+        <span class="project-stat-label">In Progress</span>
+      </div>
+      <% if (stats.overdue > 0) { %>
+      <div class="project-stat">
+        <span class="project-stat-value" style="color: var(--danger)"><%= stats.overdue %></span>
+        <span class="project-stat-label">Overdue</span>
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Task List -->
+  <div id="task-list-container" class="task-list-wrapper">
+    <%- include('partials/task-list', { tasks, filters: { project_id: project.id }, projects }) %>
+  </div>
+
+</main>
+
+<div id="modal-container"></div>

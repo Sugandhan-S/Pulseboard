@@ -1,0 +1,46 @@
+<!-- ── Topbar ── -->
+<header class="topbar">
+  <div>
+    <h1 class="topbar-title">Activity Feed</h1>
+    <p class="topbar-subtitle"><%= total %> total events recorded</p>
+  </div>
+  <div class="topbar-actions">
+    <a href="/" class="btn btn-secondary btn-sm">← Back to Dashboard</a>
+  </div>
+</header>
+
+<main class="page-content">
+
+  <div class="activity-section">
+    <div class="activity-header">
+      <span class="card-title">📋 All Activity</span>
+      <span class="text-muted text-sm">Page <%= page %> of <%= totalPages %></span>
+    </div>
+
+    <% if (items.length === 0) { %>
+      <div class="activity-empty">No activity recorded yet.</div>
+    <% } else { %>
+      <ul class="activity-list">
+        <% items.forEach(item => { %>
+          <%- include('partials/activity-item', { item }) %>
+        <% }) %>
+      </ul>
+    <% } %>
+  </div>
+
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+  <nav class="pagination">
+    <% if (page > 1) { %>
+      <a href="/activity?page=<%= page - 1 %>" class="pagination-btn">← Previous</a>
+    <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="/activity?page=<%= i %>" class="pagination-btn <%= i === page ? 'active' : '' %>"><%= i %></a>
+    <% } %>
+    <% if (page < totalPages) { %>
+      <a href="/activity?page=<%= page + 1 %>" class="pagination-btn">Next →</a>
+    <% } %>
+  </nav>
+  <% } %>
+
+</main>

@@ -1,0 +1,27 @@
+node_modules/
+
+# SQLite database files (auto-generated at runtime)
+*.db
+*.db-shm
+*.db-wal
+
+# Environment secrets
+.env
+
+# Build output
+dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor directories
+.vscode/
+.idea/
+
+# This doc is only for local learning — not needed in repo
+pulseboard_codeflow.md

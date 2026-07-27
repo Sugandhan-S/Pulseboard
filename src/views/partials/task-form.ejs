@@ -1,0 +1,126 @@
+<%
+const f = (typeof formData !== 'undefined' && formData) ? formData : {};
+%>
+<div class="form-overlay" id="task-form-overlay">
+  <div class="form-panel" role="dialog" aria-modal="true" aria-label="New Task">
+    <div class="form-panel-header">
+      <h2 class="form-panel-title">＋ New Task</h2>
+      <button
+        class="form-close-btn"
+        onclick="document.getElementById('modal-container').innerHTML=''"
+        type="button"
+      >✕</button>
+    </div>
+
+    <form
+      hx-post="/tasks"
+      hx-target="#task-list"
+      hx-swap="afterbegin"
+      hx-indicator="#global-loader"
+    >
+      <div class="form-body">
+
+        <!-- Inline Errors -->
+        <% if (errors && errors.length > 0) { %>
+          <ul class="error-list">
+            <% errors.forEach(e => { %>
+              <li>⚠️ <%= e %></li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+        <!-- Title -->
+        <div class="form-group">
+          <label class="form-label" for="task-title-new">Title <span class="required">*</span></label>
+          <input
+            id="task-title-new"
+            name="title"
+            type="text"
+            class="form-input <%= errors && errors.length ? 'error' : '' %>"
+            placeholder="What needs to be done?"
+            value="<%= f.title || '' %>"
+            required
+            maxlength="120"
+            autofocus
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label class="form-label" for="task-desc-new">Description</label>
+          <textarea
+            id="task-desc-new"
+            name="description"
+            class="form-input form-textarea"
+            placeholder="Optional notes or details…"
+            rows="3"
+          ><%= f.description || '' %></textarea>
+        </div>
+
+        <!-- Project + Status row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="task-project-new">Project</label>
+            <select id="task-project-new" name="project_id" class="form-input filter-select">
+              <option value="">— No Project —</option>
+              <% projects.forEach(p => { %>
+                <option value="<%= p.id %>" <%= f.project_id == p.id ? 'selected' : '' %>><%= p.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task-status-new">Status</label>
+            <select id="task-status-new" name="status" class="form-input filter-select">
+              <option value="todo" <%= (!f.status || f.status === 'todo') ? 'selected' : '' %>>To Do</option>
+              <option value="in_progress" <%= f.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+              <option value="review" <%= f.status === 'review' ? 'selected' : '' %>>Review</option>
+              <option value="done" <%= f.status === 'done' ? 'selected' : '' %>>Done</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Priority + Due Date row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="task-priority-new">Priority</label>
+            <select id="task-priority-new" name="priority" class="form-input filter-select">
+              <option value="low" <%= f.priority === 'low' ? 'selected' : '' %>>🟢 Low</option>
+              <option value="medium" <%= (!f.priority || f.priority === 'medium') ? 'selected' : '' %>>🟡 Medium</option>
+              <option value="high" <%= f.priority === 'high' ? 'selected' : '' %>>🔴 High</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="task-due-new">Due Date</label>
+            <input
+              id="task-due-new"
+              name="due_date"
+              type="date"
+              class="form-input"
+              value="<%= f.due_date || '' %>"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-footer">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          onclick="document.getElementById('modal-container').innerHTML=''"
+        >Cancel</button>
+        <button type="submit" class="btn btn-primary">＋ Create Task</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Close modal after successful task creation
+  document.addEventListener('htmx:afterSwap', function handler(e) {
+    if (e.detail.target && e.detail.target.id === 'task-list') {
+      document.getElementById('modal-container').innerHTML = '';
+      document.removeEventListener('htmx:afterSwap', handler);
+    }
+  });
+</script>

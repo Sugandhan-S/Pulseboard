@@ -1,0 +1,77 @@
+<%
+const f = (typeof formData !== 'undefined' && formData) ? formData : (task || {});
+%>
+<li id="task-<%= task.id %>" class="task-row task-edit-row">
+  <form
+    hx-put="/tasks/<%= task.id %>"
+    hx-target="#task-<%= task.id %>"
+    hx-swap="outerHTML"
+    hx-indicator="#global-loader"
+    style="width:100%"
+  >
+    <!-- Inline Errors -->
+    <% if (errors && errors.length > 0) { %>
+      <ul class="error-list" style="margin-bottom: var(--space-3);">
+        <% errors.forEach(e => { %>
+          <li>⚠️ <%= e %></li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <div style="display:flex; flex-direction:column; gap:var(--space-3); width:100%;">
+
+      <input
+        name="title"
+        type="text"
+        class="form-input"
+        placeholder="Task title"
+        value="<%= f.title || '' %>"
+        required
+        maxlength="120"
+        autofocus
+        style="font-size:0.9375rem;"
+      />
+
+      <textarea
+        name="description"
+        class="form-input form-textarea"
+        placeholder="Description (optional)"
+        rows="2"
+        style="min-height:60px;"
+      ><%= f.description || '' %></textarea>
+
+      <div style="display:flex; gap:var(--space-3); flex-wrap:wrap;">
+        <select name="project_id" class="filter-select" style="flex:1; min-width:120px;">
+          <option value="">— No Project —</option>
+          <% projects.forEach(p => { %>
+            <option value="<%= p.id %>" <%= f.project_id == p.id ? 'selected' : '' %>><%= p.name %></option>
+          <% }) %>
+        </select>
+        <select name="status" class="filter-select" style="flex:1; min-width:120px;">
+          <option value="todo" <%= (!f.status || f.status === 'todo') ? 'selected' : '' %>>To Do</option>
+          <option value="in_progress" <%= f.status === 'in_progress' ? 'selected' : '' %>>In Progress</option>
+          <option value="review" <%= f.status === 'review' ? 'selected' : '' %>>Review</option>
+          <option value="done" <%= f.status === 'done' ? 'selected' : '' %>>Done</option>
+        </select>
+        <select name="priority" class="filter-select" style="flex:1; min-width:100px;">
+          <option value="low" <%= f.priority === 'low' ? 'selected' : '' %>>🟢 Low</option>
+          <option value="medium" <%= (!f.priority || f.priority === 'medium') ? 'selected' : '' %>>🟡 Medium</option>
+          <option value="high" <%= f.priority === 'high' ? 'selected' : '' %>>🔴 High</option>
+        </select>
+        <input type="date" name="due_date" class="filter-select" value="<%= f.due_date || '' %>" style="flex:1; min-width:130px; padding-right:var(--space-3);" />
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:var(--space-2); margin-top:var(--space-1);">
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm"
+          hx-get="/tasks/<%= task.id %>/cancel"
+          hx-target="#task-<%= task.id %>"
+          hx-swap="outerHTML"
+        >Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm">💾 Save</button>
+      </div>
+
+    </div>
+  </form>
+</li>
