@@ -2,8 +2,11 @@
 
 > **A beautifully crafted, blazing-fast task and activity board.**
 
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-pulseboard--organizee.onrender.com-blue?style=for-the-badge)](https://pulseboard-organizee.onrender.com/)
+
 PulseBoard delivers a premium, single-page application (SPA) experience **without** the complexity of heavy JavaScript frameworks. Built on the power of **HTMX, Node.js, Express, and SQLite**, it demonstrates how you can achieve real-time interactivity, instant DOM swaps, and an ultra-responsive UI while keeping your business logic securely on the server.
 
+👉 **Try the Live App:** [https://pulseboard-organizee.onrender.com/](https://pulseboard-organizee.onrender.com/)
 ---
 
 ## ✨ Why PulseBoard?
