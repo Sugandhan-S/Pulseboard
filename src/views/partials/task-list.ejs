@@ -11,21 +11,23 @@
     </div>
   </div>
 
-  <% if (tasks.length === 0) { %>
-    <%- include('empty-state', {
-      icon: '📭',
-      title: 'No tasks found',
-      description: filters && (filters.search || filters.status || filters.priority || filters.project_id)
-        ? 'Try adjusting your filters to find what you\'re looking for.'
-        : 'Create your first task to get started!',
-      actionLabel: '＋ New Task',
-      actionAttrs: 'hx-get="/tasks/new" hx-target="#modal-container" hx-swap="innerHTML"'
-    }) %>
-  <% } else { %>
-    <ul id="task-list">
+  <ul id="task-list">
+    <% if (tasks.length === 0) { %>
+      <li class="empty-state-wrapper">
+        <%- include('empty-state', {
+          icon: '📭',
+          title: 'No tasks found',
+          description: filters && (filters.search || filters.status || filters.priority || filters.project_id)
+            ? 'Try adjusting your filters to find what you\'re looking for.'
+            : 'Create your first task to get started!',
+          actionLabel: '＋ New Task',
+          actionAttrs: 'hx-get="/tasks/new" hx-target="#modal-container" hx-swap="innerHTML"'
+        }) %>
+      </li>
+    <% } else { %>
       <% tasks.forEach(task => { %>
         <%- include('task-row', { task }) %>
       <% }) %>
-    </ul>
-  <% } %>
+    <% } %>
+  </ul>
 </div>

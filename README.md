@@ -2,9 +2,7 @@
 
 > **A beautifully crafted, blazing-fast task and activity board.**
 
-[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-pulseboard--organizee.onrender.com-blue?style=for-the-badge)](https://pulseboard-organizee.onrender.com/)
-
-PulseBoard delivers a premium, single-page application (SPA) experience **without** the complexity of heavy JavaScript frameworks. Built on the power of **HTMX, Node.js, Express, and SQLite**, it demonstrates how you can achieve real-time interactivity, instant DOM swaps, and an ultra-responsive UI while keeping your business logic securely on the server.
+PulseBoard delivers a premium, single-page application (SPA) experience **without** the complexity of heavy JavaScript frameworks. Built on the power of **HTMX, Node.js, Express, and PostgreSQL (Supabase)**, it demonstrates how you can achieve real-time interactivity, instant DOM swaps, and persistent data cloud hosting while keeping your business logic securely on the server.
 
 👉 **Try the Live App:** [https://pulseboard-organizee.onrender.com/](https://pulseboard-organizee.onrender.com/)
 ---
@@ -17,7 +15,7 @@ PulseBoard delivers a premium, single-page application (SPA) experience **withou
 - 🔍 **Instant Search & Filters** — Find what you need with debounced search inputs and URL-synced filter states.
 - 📊 **Dynamic KPI Dashboard** — Live stats that keep you on top of overdue and in-progress work.
 - ⚡ **Global Activity Feed** — Every action is logged and reflected in a live feed.
-- 🎨 **Premium UI/UX** — A polished dark mode design system built with CSS custom properties and micro-animations.
+- 🌐 **Persistent Cloud Data** — Cloud PostgreSQL integration via Supabase keeps data alive even when Render free apps spin down.
 
 ---
 

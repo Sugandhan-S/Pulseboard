@@ -16,6 +16,7 @@ const f = (typeof formData !== 'undefined' && formData) ? formData : {};
       hx-post="/tasks"
       hx-target="#task-list"
       hx-swap="afterbegin"
+      hx-on::after-swap="document.querySelector('#task-list .empty-state-wrapper') && document.querySelector('#task-list .empty-state-wrapper').remove()"
       hx-indicator="#global-loader"
     >
       <div class="form-body">

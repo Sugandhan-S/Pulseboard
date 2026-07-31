@@ -1,15 +1,22 @@
 {
   "name": "pulseboard",
   "version": "1.0.0",
-  "description": "A polished HTMX-powered task and activity board built with Node.js, Express, EJS, and SQLite",
+  "description": "A polished HTMX-powered task and activity board built with Node.js, Express, EJS, and PostgreSQL (Supabase)",
   "main": "src/server.js",
   "scripts": {
-    "start": "node --experimental-sqlite src/server.js",
-    "dev": "nodemon --exec \"node --experimental-sqlite\" src/server.js",
-    "seed": "node --experimental-sqlite src/db/seed.js",
-    "init-db": "node --experimental-sqlite src/db/init.js"
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/db/seed.js",
+    "init-db": "node src/db/init.js"
   },
-  "keywords": ["htmx", "express", "sqlite", "task-management", "productivity"],
+  "keywords": [
+    "htmx",
+    "express",
+    "postgresql",
+    "supabase",
+    "task-management",
+    "productivity"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -17,7 +24,8 @@
     "ejs": "^3.1.10",
     "express": "^4.19.2",
     "express-ejs-layouts": "^2.5.1",
-    "method-override": "^3.0.0"
+    "method-override": "^3.0.0",
+    "pg": "^8.22.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.3"

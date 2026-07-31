@@ -1,43 +1,48 @@
 'use strict';
-process.removeAllListeners('warning');
+const { query } = require('../db/database');
 
-const { getDb } = require('../db/database');
-
-function logActivity(db, entityType, entityId, action, message) {
-  db.prepare(`
-    INSERT INTO activity_logs (entity_type, entity_id, action, message)
-    VALUES (?, ?, ?, ?)
-  `).run(entityType, entityId, action, message);
+async function logActivity(entityType, entityId, action, message) {
+  await query(
+    `INSERT INTO activity_logs (entity_type, entity_id, action, message)
+     VALUES ($1, $2, $3, $4)`,
+    [entityType, entityId, action, message]
+  );
 }
 
-function getAllProjects(includeArchived = false) {
-  const db = getDb();
-  const query = includeArchived
+async function getAllProjects(includeArchived = false) {
+  const sql = includeArchived
     ? `SELECT * FROM projects ORDER BY status ASC, name ASC`
     : `SELECT * FROM projects WHERE status = 'active' ORDER BY name ASC`;
-  return db.prepare(query).all();
+  const res = await query(sql);
+  return res.rows;
 }
 
-function getProjectById(id) {
-  const db = getDb();
-  return db.prepare('SELECT * FROM projects WHERE id = ?').get(Number(id));
+async function getProjectById(id) {
+  const res = await query('SELECT * FROM projects WHERE id = $1', [Number(id)]);
+  return res.rows[0] || null;
 }
 
-function getProjectStats(id) {
-  const db = getDb();
+async function getProjectStats(id) {
   const nid = Number(id);
-  const total = db.prepare('SELECT COUNT(*) as count FROM tasks WHERE project_id = ?').get(nid).count;
-  const done = db.prepare("SELECT COUNT(*) as count FROM tasks WHERE project_id = ? AND status = 'done'").get(nid).count;
-  const inProgress = db.prepare("SELECT COUNT(*) as count FROM tasks WHERE project_id = ? AND status = 'in_progress'").get(nid).count;
-  const overdue = db.prepare(`
-    SELECT COUNT(*) as count FROM tasks
-    WHERE project_id = ? AND is_completed = 0 AND due_date < date('now')
-  `).get(nid).count;
-  return { total, done, inProgress, overdue };
+  const [totalRes, doneRes, inProgressRes, overdueRes] = await Promise.all([
+    query('SELECT COUNT(*) as count FROM tasks WHERE project_id = $1', [nid]),
+    query("SELECT COUNT(*) as count FROM tasks WHERE project_id = $1 AND status = 'done'", [nid]),
+    query("SELECT COUNT(*) as count FROM tasks WHERE project_id = $1 AND status = 'in_progress'", [nid]),
+    query(
+      'SELECT COUNT(*) as count FROM tasks WHERE project_id = $1 AND is_completed = 0 AND due_date < CURRENT_DATE',
+      [nid]
+    ),
+  ]);
+
+  return {
+    total: Number(totalRes.rows[0].count),
+    done: Number(doneRes.rows[0].count),
+    inProgress: Number(inProgressRes.rows[0].count),
+    overdue: Number(overdueRes.rows[0].count),
+  };
 }
 
-function createProject(data) {
-  const db = getDb();
+async function createProject(data) {
   const { name, description } = data;
 
   const errors = [];
@@ -45,17 +50,17 @@ function createProject(data) {
   if (name && name.trim().length > 80) errors.push('Name must be 80 characters or fewer.');
   if (errors.length) return { errors };
 
-  const result = db.prepare(`
-    INSERT INTO projects (name, description) VALUES (?, ?)
-  `).run(name.trim(), description ? description.trim() : null);
+  const res = await query(
+    `INSERT INTO projects (name, description) VALUES ($1, $2) RETURNING *`,
+    [name.trim(), description ? description.trim() : null]
+  );
 
-  const project = getProjectById(Number(result.lastInsertRowid));
-  logActivity(db, 'project', project.id, 'created', `Project "${project.name}" was created`);
+  const project = res.rows[0];
+  await logActivity('project', project.id, 'created', `Project "${project.name}" was created`);
   return { project };
 }
 
-function updateProject(id, data) {
-  const db = getDb();
+async function updateProject(id, data) {
   const { name, description } = data;
 
   const errors = [];
@@ -63,32 +68,33 @@ function updateProject(id, data) {
   if (name && name.trim().length > 80) errors.push('Name must be 80 characters or fewer.');
   if (errors.length) return { errors };
 
-  db.prepare(`
-    UPDATE projects SET name = ?, description = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?
-  `).run(name.trim(), description ? description.trim() : null, Number(id));
+  const res = await query(
+    `UPDATE projects SET name = $1, description = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING *`,
+    [name.trim(), description ? description.trim() : null, Number(id)]
+  );
 
-  const project = getProjectById(Number(id));
-  logActivity(db, 'project', project.id, 'updated', `Project "${project.name}" was renamed`);
+  const project = res.rows[0];
+  if (project) {
+    await logActivity('project', project.id, 'updated', `Project "${project.name}" was renamed`);
+  }
   return { project };
 }
 
-function archiveProject(id) {
-  const db = getDb();
-  const project = getProjectById(Number(id));
+async function archiveProject(id) {
+  const project = await getProjectById(id);
   if (!project) return false;
 
-  db.prepare(`UPDATE projects SET status = 'archived', updated_at = CURRENT_TIMESTAMP WHERE id = ?`).run(Number(id));
-  logActivity(db, 'project', Number(id), 'archived', `Project "${project.name}" was archived`);
+  await query(`UPDATE projects SET status = 'archived', updated_at = CURRENT_TIMESTAMP WHERE id = $1`, [Number(id)]);
+  await logActivity('project', Number(id), 'archived', `Project "${project.name}" was archived`);
   return true;
 }
 
-function deleteProject(id) {
-  const db = getDb();
-  const project = getProjectById(Number(id));
+async function deleteProject(id) {
+  const project = await getProjectById(id);
   if (!project) return false;
 
-  db.prepare('DELETE FROM projects WHERE id = ?').run(Number(id));
-  logActivity(db, 'project', Number(id), 'deleted', `Project "${project.name}" was deleted`);
+  await query('DELETE FROM projects WHERE id = $1', [Number(id)]);
+  await logActivity('project', Number(id), 'deleted', `Project "${project.name}" was deleted`);
   return true;
 }
 
