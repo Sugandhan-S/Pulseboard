@@ -4,6 +4,7 @@
 
 PulseBoard delivers a premium, single-page application (SPA) experience **without** the complexity of heavy JavaScript frameworks. Built on the power of **HTMX, Node.js, Express, and PostgreSQL (Supabase)**, it demonstrates how you can achieve real-time interactivity, instant DOM swaps, and persistent data cloud hosting while keeping your business logic securely on the server.
 
+👉 **Try the Live App:** [https://pulseboard-organizee.onrender.com/](https://pulseboard-organizee.onrender.com/)
 ---
 
 ## ✨ Why PulseBoard?
