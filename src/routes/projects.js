@@ -17,59 +17,81 @@ router.get('/new', (req, res) => {
 });
 
 // POST /projects — create project
-router.post('/', (req, res) => {
-  const result = createProject(req.body);
-  if (result.errors) {
-    return res.status(422).render('partials/project-form', {
-      project: null,
-      errors: result.errors,
-      formData: req.body,
-      layout: false,
-    });
+router.post('/', async (req, res, next) => {
+  try {
+    const result = await createProject(req.body);
+    if (result.errors) {
+      return res.status(422).render('partials/project-form', {
+        project: null,
+        errors: result.errors,
+        formData: req.body,
+        layout: false,
+      });
+    }
+    // Redirect to new project page
+    res.set('HX-Redirect', `/projects/${result.project.id}`);
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
   }
-  // Redirect to new project page
-  res.set('HX-Redirect', `/projects/${result.project.id}`);
-  res.sendStatus(200);
 });
 
 // GET /projects/:id — project detail page
-router.get('/:id', (req, res) => {
-  const project = getProjectById(req.params.id);
-  if (!project) return res.status(404).render('404', { title: 'Project Not Found' });
+router.get('/:id', async (req, res, next) => {
+  try {
+    const project = await getProjectById(req.params.id);
+    if (!project) return res.status(404).render('404', { title: 'Project Not Found' });
 
-  const stats = getProjectStats(project.id);
-  const tasks = buildTaskQuery({ project_id: project.id });
-  const projects = getAllProjects();
+    const [stats, tasks, projects] = await Promise.all([
+      getProjectStats(project.id),
+      buildTaskQuery({ project_id: project.id }),
+      getAllProjects(),
+    ]);
 
-  res.render('project', { project, stats, tasks, projects, title: project.name, currentPage: 'project', currentProject: project });
+    res.render('project', { project, stats, tasks, projects, title: project.name, currentPage: 'project', currentProject: project });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // GET /projects/:id/edit — edit form fragment
-router.get('/:id/edit', (req, res) => {
-  const project = getProjectById(req.params.id);
-  if (!project) return res.status(404).send('<p class="error-msg">Project not found.</p>');
-  res.render('partials/project-form', { project, errors: [], layout: false });
+router.get('/:id/edit', async (req, res, next) => {
+  try {
+    const project = await getProjectById(req.params.id);
+    if (!project) return res.status(404).send('<p class="error-msg">Project not found.</p>');
+    res.render('partials/project-form', { project, errors: [], layout: false });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // PUT /projects/:id — update project
-router.put('/:id', (req, res) => {
-  const result = updateProject(req.params.id, req.body);
-  if (result.errors) {
-    return res.status(422).render('partials/project-form', {
-      project: { id: req.params.id, ...req.body },
-      errors: result.errors,
-      layout: false,
-    });
+router.put('/:id', async (req, res, next) => {
+  try {
+    const result = await updateProject(req.params.id, req.body);
+    if (result.errors) {
+      return res.status(422).render('partials/project-form', {
+        project: { id: req.params.id, ...req.body },
+        errors: result.errors,
+        layout: false,
+      });
+    }
+    res.set('HX-Redirect', `/projects/${req.params.id}`);
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
   }
-  res.set('HX-Redirect', `/projects/${req.params.id}`);
-  res.sendStatus(200);
 });
 
 // DELETE /projects/:id — archive project
-router.delete('/:id', (req, res) => {
-  archiveProject(req.params.id);
-  res.set('HX-Redirect', '/');
-  res.sendStatus(200);
+router.delete('/:id', async (req, res, next) => {
+  try {
+    await archiveProject(req.params.id);
+    res.set('HX-Redirect', '/');
+    res.sendStatus(200);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

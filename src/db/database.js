@@ -1,21 +1,33 @@
 'use strict';
-// Node 24+ ships SQLite as a built-in (experimental) module.
-// This means zero native compilation and zero extra dependencies.
-const { DatabaseSync } = require('node:sqlite');
-const path = require('path');
-const fs = require('fs');
+const { Pool } = require('pg');
 
-const DB_PATH = path.join(__dirname, 'pulseboard.db');
+let pool = null;
 
-let _db = null;
+function getPool() {
+  if (!pool) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      console.warn('⚠️ DATABASE_URL environment variable is not set!');
+    }
 
-function getDb() {
-  if (!_db) {
-    _db = new DatabaseSync(DB_PATH);
-    _db.exec('PRAGMA journal_mode = WAL;');
-    _db.exec('PRAGMA foreign_keys = ON;');
+    const isProduction = process.env.NODE_ENV === 'production' || (connectionString && connectionString.includes('supabase'));
+
+    pool = new Pool({
+      connectionString: connectionString || 'postgres://postgres:postgres@localhost:5432/pulseboard',
+      ssl: isProduction ? { rejectUnauthorized: false } : false,
+    });
   }
-  return _db;
+  return pool;
 }
 
-module.exports = { getDb };
+/**
+ * Helper to run SQL queries via pg pool.
+ * @param {string} text 
+ * @param {Array} [params] 
+ */
+async function query(text, params) {
+  const p = getPool();
+  return await p.query(text, params);
+}
+
+module.exports = { getPool, query };

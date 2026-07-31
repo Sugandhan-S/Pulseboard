@@ -1,23 +1,29 @@
 'use strict';
-process.removeAllListeners('warning');
+const { query } = require('../db/database');
 
-const { getDb } = require('../db/database');
-
-function getRecentActivity(limit = 15) {
-  const db = getDb();
-  return db.prepare(`
-    SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT ?
-  `).all(limit);
+async function getRecentActivity(limit = 15) {
+  const res = await query(
+    'SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT $1',
+    [limit]
+  );
+  return res.rows;
 }
 
-function getAllActivity(page = 1, perPage = 30) {
-  const db = getDb();
+async function getAllActivity(page = 1, perPage = 30) {
   const offset = (page - 1) * perPage;
-  const items = db.prepare(`
-    SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT ? OFFSET ?
-  `).all(perPage, offset);
-  const total = db.prepare('SELECT COUNT(*) as count FROM activity_logs').get().count;
-  return { items, total, page, perPage, totalPages: Math.ceil(Number(total) / perPage) };
+  const itemsRes = await query(
+    'SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+    [perPage, offset]
+  );
+  const totalRes = await query('SELECT COUNT(*) as count FROM activity_logs');
+  const total = Number(totalRes.rows[0].count);
+  return {
+    items: itemsRes.rows,
+    total,
+    page,
+    perPage,
+    totalPages: Math.ceil(total / perPage),
+  };
 }
 
 module.exports = { getRecentActivity, getAllActivity };
