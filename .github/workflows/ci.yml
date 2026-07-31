@@ -1,0 +1,38 @@
+name: PulseBoard CI
+
+on:
+  push:
+    branches: [main, dev-fix]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout the repository code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. Verify the server file exists and is valid JS
+      - name: Verify server entry point
+        run: node --check src/server.js
+
+    env:
+      # Injected securely from GitHub Repository Secrets
+      # Never hardcoded — set this in: Settings → Secrets and variables → Actions
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NODE_ENV: production
+      PORT: 3000
