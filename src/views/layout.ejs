@@ -62,6 +62,93 @@
   <!-- ── Modal Container (HTMX target) ── -->
   <div id="modal-container"></div>
 
+  <!-- ── Mobile Bottom Navigation ── -->
+  <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+
+    <!-- Dashboard -->
+    <a href="/"
+       class="mobile-nav-item <%= (typeof currentPage !== 'undefined' && currentPage === 'dashboard') ? 'active' : '' %>"
+       id="mobile-nav-dashboard">
+      <span class="mobile-nav-icon">🏠</span>
+      <span class="mobile-nav-label">Home</span>
+    </a>
+
+    <!-- Projects sheet toggle -->
+    <button class="mobile-nav-item" id="mobile-nav-projects-btn" onclick="toggleProjectsSheet()" type="button">
+      <span class="mobile-nav-icon">📁</span>
+      <span class="mobile-nav-label">Projects</span>
+    </button>
+
+    <!-- New Project -->
+    <button
+      class="mobile-nav-item mobile-nav-add"
+      id="mobile-nav-new-project"
+      hx-get="/projects/new"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+      type="button"
+    >
+      <span class="mobile-nav-add-icon">＋</span>
+      <span class="mobile-nav-label">New Project</span>
+    </button>
+
+    <!-- New Task -->
+    <button
+      class="mobile-nav-item"
+      id="mobile-nav-new-task"
+      hx-get="/tasks/new"
+      hx-target="#modal-container"
+      hx-swap="innerHTML"
+      type="button"
+    >
+      <span class="mobile-nav-icon">✏️</span>
+      <span class="mobile-nav-label">New Task</span>
+    </button>
+
+    <!-- Activity Feed -->
+    <a href="/activity"
+       class="mobile-nav-item <%= (typeof currentPage !== 'undefined' && currentPage === 'activity') ? 'active' : '' %>"
+       id="mobile-nav-activity">
+      <span class="mobile-nav-icon">📋</span>
+      <span class="mobile-nav-label">Activity</span>
+    </a>
+
+  </nav>
+
+  <!-- ── Mobile Projects Sheet ── -->
+  <div class="mobile-projects-backdrop" id="mobile-projects-backdrop" onclick="toggleProjectsSheet()"></div>
+  <div class="mobile-projects-sheet" id="mobile-projects-sheet">
+    <div class="mobile-sheet-handle"></div>
+    <div class="mobile-sheet-header">
+      <span class="mobile-sheet-title">📁 Projects</span>
+      <button class="mobile-sheet-close" onclick="toggleProjectsSheet()" type="button">✕</button>
+    </div>
+    <nav class="mobile-sheet-nav">
+      <% if (typeof projects !== 'undefined' && projects.length > 0) { %>
+        <% projects.forEach(p => { %>
+          <a href="/projects/<%= p.id %>"
+             class="mobile-sheet-link <%= (typeof currentProject !== 'undefined' && currentProject && currentProject.id === p.id) ? 'active' : '' %>"
+             onclick="toggleProjectsSheet()">
+            <span class="mobile-sheet-link-icon">📁</span>
+            <span class="truncate"><%= p.name %></span>
+          </a>
+        <% }) %>
+      <% } else { %>
+        <p class="mobile-sheet-empty">No projects yet.<br>Tap <strong>New Project</strong> to create one.</p>
+      <% } %>
+    </nav>
+    <div class="mobile-sheet-footer">
+      <button
+        class="btn btn-primary w-full"
+        hx-get="/projects/new"
+        hx-target="#modal-container"
+        hx-swap="innerHTML"
+        onclick="toggleProjectsSheet()"
+        type="button"
+      >＋ New Project</button>
+    </div>
+  </div>
+
   <script>
     // HTMX progress bar
     document.addEventListener('htmx:beforeRequest', () => {
@@ -88,6 +175,7 @@
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.getElementById('modal-container').innerHTML = '';
+        closeProjectsSheet();
       }
     });
 
@@ -102,6 +190,28 @@
         e.target.dataset.status = e.target.value;
       }
     });
+
+    // Mobile Projects Sheet
+    function toggleProjectsSheet() {
+      const sheet = document.getElementById('mobile-projects-sheet');
+      const backdrop = document.getElementById('mobile-projects-backdrop');
+      const btn = document.getElementById('mobile-nav-projects-btn');
+      const isOpen = sheet.classList.contains('open');
+      if (isOpen) {
+        sheet.classList.remove('open');
+        backdrop.classList.remove('open');
+        btn.classList.remove('active');
+      } else {
+        sheet.classList.add('open');
+        backdrop.classList.add('open');
+        btn.classList.add('active');
+      }
+    }
+    function closeProjectsSheet() {
+      document.getElementById('mobile-projects-sheet').classList.remove('open');
+      document.getElementById('mobile-projects-backdrop').classList.remove('open');
+      document.getElementById('mobile-nav-projects-btn').classList.remove('active');
+    }
   </script>
 </body>
 </html>
