@@ -60,7 +60,7 @@ flowchart TD
     %% ==================== 3. DATABASE ====================
     subgraph DATA[" 💾 3. DATA LAYER (Storage) "]
         direction TB
-        DB_ENGINE[("SQLite Database\n(node:sqlite / WAL Mode)")]
+        DB_ENGINE[("PostgreSQL Database\n(Supabase / pg Pool)")]
         TABLES["Tables: projects · tasks · activity_logs · task_tags"]
         DB_ENGINE --- TABLES
     end
@@ -106,17 +106,24 @@ cd pulseboard
 # 2. Install dependencies
 npm install
 
-# 3. Create your environment file
+# 3. Configure your environment
 cp .env.example .env
+# Then open .env and set your Supabase connection string:
+# DATABASE_URL=postgres://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
 
-# 4. Seed the database with sample projects and tasks
+# 4. Initialize the database schema (creates tables in Supabase)
+npm run init-db
+
+# 5. (Optional) Seed with sample projects and tasks
 npm run seed
 
-# 5. Ignite the server!
+# 6. Ignite the server!
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) and experience the speed.
+
+> **Tip:** Get your free Supabase project at [supabase.com](https://supabase.com). Copy the connection string from **Project Settings → Database → Connection string (URI mode)**.
 
 ---
 
@@ -124,7 +131,7 @@ Open [http://localhost:3000](http://localhost:3000) and experience the speed.
 
 - **Runtime:** Node.js
 - **Server:** Express.js
-- **Database:** SQLite (using Node.js built-in `node:sqlite` for zero native dependencies)
+- **Database:** PostgreSQL via [Supabase](https://supabase.com) (using the `pg` driver with connection pooling)
 - **Frontend Interactivity:** HTMX 1.9
 - **Templates:** EJS + express-ejs-layouts
 - **Styling:** Vanilla CSS with custom properties (CSS variables)
@@ -137,7 +144,7 @@ PulseBoard is a masterclass in modern server-rendered architecture:
 - **`hx-swap-oob`**: Update multiple UI elements (like KPI stats and the activity feed) from a single server response—no messy DOM manipulation in JavaScript!
 - **Server-Rendered Partials**: EJS templates generate perfectly sized HTML fragments, keeping the frontend dumb and the backend smart.
 - **URL-Driven State**: Using `hx-push-url`, filtering tasks updates the browser URL, making your current view fully bookmarkable.
-- **Embedded Performance**: Using Node's native SQLite with Write-Ahead Logging (WAL) makes database operations insanely fast for single-tenant apps.
+- **Cloud-Persistent Data**: Backed by Supabase (PostgreSQL), data survives Render's free-tier spin-downs — no cold-start data loss.
 
 ---
 
