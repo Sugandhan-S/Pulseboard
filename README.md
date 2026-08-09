@@ -106,7 +106,7 @@ cd pulseboard
 # 2. Install dependencies
 npm install
 
-# 3. Create your environment file
+# 3. Configure your environment
 cp .env.example .env
 # Then open .env and set your Neon connection string:
 # DATABASE_URL=postgres://[user]:[password]@[neon-hostname]-pooler.[region].aws.neon.tech/neondb?sslmode=require
@@ -115,9 +115,10 @@ cp .env.example .env
 npm run init-db
 
 # 5. (Optional) Seed with sample projects and tasks
+# 5. (Optional) Seed with sample projects and tasks
 npm run seed
 
-# 5. Ignite the server!
+# 6. Ignite the server!
 npm run dev
 ```
 
