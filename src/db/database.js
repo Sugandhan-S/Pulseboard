@@ -10,12 +10,13 @@ function getPool() {
       console.warn('⚠️ DATABASE_URL environment variable is not set!');
     }
 
-    const isProduction = process.env.NODE_ENV === 'production' || (connectionString && connectionString.includes('supabase'));
+    const isProduction = process.env.NODE_ENV === 'production' ||
+      (connectionString && connectionString.includes('neon'));
 
     pool = new Pool({
       connectionString: connectionString || 'postgres://postgres:postgres@localhost:5432/pulseboard',
       ssl: isProduction ? { rejectUnauthorized: false } : false,
-      // Supabase cold-start resilience settings
+      // Neon PostgreSQL connection settings
       connectionTimeoutMillis: 10000,   // wait up to 10s for a connection
       idleTimeoutMillis: 30000,          // release idle connections after 30s
       max: 5,                            // keep pool small for free-tier limits
@@ -26,8 +27,8 @@ function getPool() {
 
 /**
  * Helper to run SQL queries via pg pool.
- * Note: When using Supabase, ensure you connect to the transaction pooler (port 6543)
- * if this app creates many short-lived connections.
+ * Note: When connecting to Neon, use the pooled connection string (-pooler endpoint)
+ * for optimal serverless connection handling.
  * @param {string} text 
  * @param {Array} [params] 
  */

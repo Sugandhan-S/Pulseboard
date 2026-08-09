@@ -1,7 +1,7 @@
 {
   "name": "pulseboard",
   "version": "1.0.0",
-  "description": "A polished HTMX-powered task and activity board built with Node.js, Express, EJS, and PostgreSQL (Supabase)",
+  "description": "A polished HTMX-powered task and activity board built with Node.js, Express, EJS, and PostgreSQL (Neon)",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -13,7 +13,7 @@
     "htmx",
     "express",
     "postgresql",
-    "supabase",
+    "neon",
     "task-management",
     "productivity"
   ],

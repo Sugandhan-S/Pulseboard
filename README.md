@@ -6,7 +6,7 @@
 [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-pulseboard--organizee.onrender.com-blue?style=for-the-badge)](https://pulseboard-organizee.onrender.com/)
 
 
-PulseBoard delivers a premium, single-page application (SPA) experience **without** the complexity of heavy JavaScript frameworks. Built on the power of **HTMX, Node.js, Express, and PostgreSQL (Supabase)**, it demonstrates how you can achieve real-time interactivity, instant DOM swaps, and persistent data cloud hosting while keeping your business logic securely on the server.
+PulseBoard delivers a premium, single-page application (SPA) experience **without** the complexity of heavy JavaScript frameworks. Built on the power of **HTMX, Node.js, Express, and PostgreSQL (Neon)**, it demonstrates how you can achieve real-time interactivity, instant DOM swaps, and persistent data cloud hosting while keeping your business logic securely on the server.
 
 👉 **Try the Live App:** [https://pulseboard-organizee.onrender.com/](https://pulseboard-organizee.onrender.com/)
 ---
@@ -19,7 +19,7 @@ PulseBoard delivers a premium, single-page application (SPA) experience **withou
 - 🔍 **Instant Search & Filters** — Find what you need with debounced search inputs and URL-synced filter states.
 - 📊 **Dynamic KPI Dashboard** — Live stats that keep you on top of overdue and in-progress work.
 - ⚡ **Global Activity Feed** — Every action is logged and reflected in a live feed.
-- 🌐 **Persistent Cloud Data** — Cloud PostgreSQL integration via Supabase keeps data alive even when Render free apps spin down.
+- 🌐 **Persistent Cloud Data** — Cloud PostgreSQL integration via Neon keeps data alive even when Render free apps spin down.
 
 ---
 
@@ -60,7 +60,7 @@ flowchart TD
     %% ==================== 3. DATABASE ====================
     subgraph DATA[" 💾 3. DATA LAYER (Storage) "]
         direction TB
-        DB_ENGINE[("PostgreSQL Database\n(Supabase / pg Pool)")]
+        DB_ENGINE[("PostgreSQL Database\n(Neon / pg Pool)")]
         TABLES["Tables: projects · tasks · activity_logs · task_tags"]
         DB_ENGINE --- TABLES
     end
@@ -108,12 +108,13 @@ npm install
 
 # 3. Configure your environment
 cp .env.example .env
-# Then open .env and set your Supabase connection string:
-# DATABASE_URL=postgres://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres
+# Then open .env and set your Neon connection string:
+# DATABASE_URL=postgres://[user]:[password]@[neon-hostname]-pooler.[region].aws.neon.tech/neondb?sslmode=require
 
-# 4. Initialize the database schema (creates tables in Supabase)
+# 4. Initialize the database schema (creates tables in Neon)
 npm run init-db
 
+# 5. (Optional) Seed with sample projects and tasks
 # 5. (Optional) Seed with sample projects and tasks
 npm run seed
 
@@ -123,7 +124,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) and experience the speed.
 
-> **Tip:** Get your free Supabase project at [supabase.com](https://supabase.com). Copy the connection string from **Project Settings → Database → Connection string (URI mode)**.
+> **Tip:** Get your free Neon project at [neon.tech](https://neon.tech). Copy the connection string from your Neon dashboard.
 
 ---
 
@@ -131,7 +132,7 @@ Open [http://localhost:3000](http://localhost:3000) and experience the speed.
 
 - **Runtime:** Node.js
 - **Server:** Express.js
-- **Database:** PostgreSQL via [Supabase](https://supabase.com) (using the `pg` driver with connection pooling)
+- **Database:** PostgreSQL via [Neon](https://neon.tech) (using the `pg` driver with connection pooling)
 - **Frontend Interactivity:** HTMX 1.9
 - **Templates:** EJS + express-ejs-layouts
 - **Styling:** Vanilla CSS with custom properties (CSS variables)
@@ -144,7 +145,7 @@ PulseBoard is a masterclass in modern server-rendered architecture:
 - **`hx-swap-oob`**: Update multiple UI elements (like KPI stats and the activity feed) from a single server response—no messy DOM manipulation in JavaScript!
 - **Server-Rendered Partials**: EJS templates generate perfectly sized HTML fragments, keeping the frontend dumb and the backend smart.
 - **URL-Driven State**: Using `hx-push-url`, filtering tasks updates the browser URL, making your current view fully bookmarkable.
-- **Cloud-Persistent Data**: Backed by Supabase (PostgreSQL), data survives Render's free-tier spin-downs — no cold-start data loss.
+- **Cloud-Persistent Data**: Backed by Neon (PostgreSQL), data survives Render's free-tier spin-downs — no cold-start data loss.
 
 ---
 

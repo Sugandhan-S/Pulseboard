@@ -1,4 +1,4 @@
-// Force IPv4 DNS resolution — prevents ETIMEDOUT when Supabase resolves to IPv6
+// Force IPv4 DNS resolution — prevents ETIMEDOUT when remote database hosts (Neon) resolve to IPv6
 require('dns').setDefaultResultOrder('ipv4first');
 
 require('dotenv').config();
